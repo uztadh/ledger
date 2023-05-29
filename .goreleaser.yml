@@ -1,0 +1,33 @@
+# .goreleaser.yml
+before:
+    hooks:
+    - make docs
+builds:
+  -
+    env:
+      - CGO_ENABLED=0
+    id: "ledger"
+    main: ./ledger/.
+    binary: ledger
+    ldflags:
+      - -s -w -X github.com/howeyc/ledger/ledger/cmd.version={{.Version}}
+    goos:
+      - windows
+      - darwin
+      - linux
+      - freebsd
+      - openbsd
+    goarch:
+      - amd64
+      - arm64
+archives:
+  -
+    builds:
+    - ledger
+    files:
+    - docs/*
+    - LICENSE.txt
+    wrap_in_directory: true
+    format_overrides:
+      - goos: windows
+        format: zip

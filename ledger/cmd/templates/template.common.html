@@ -1,0 +1,176 @@
+{{define "common-css"}}
+    <meta name="color-scheme" content="light dark">
+    <link id="css-light" href="/static/bootstrap-5.0.0.min.css" rel="stylesheet">
+    <link id="css-dark" href="/static/bootstrap-nightfall.min.css" rel="stylesheet" media="(prefers-color-scheme: dark)">
+    <link href="/static/dropdown.css" rel="stylesheet">
+{{end}}
+{{define "common-scripts"}}
+    <script src="/static/jquery-3.6.0.min.js"></script>
+    <script src="/static/bootstrap-5.0.0.bundle.min.js"></script>
+    <script src="/static/chart-3.1.1.min.js"></script>
+	<script>
+    $(document).ready(function () {
+	  $('#transactions-section').show();
+	  $('#tableprogress').hide();
+
+    // Update the toggle button based on current color scheme
+    function updateDarkToggleButton() {
+      if (typeof $("body").attr("data-color-scheme") === 'undefined') {
+        $dark = (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+        $("#css-toggle-btn").prop( "checked", $dark );
+      } else {
+        $mode = $("body").attr("data-color-scheme");
+        $dark = ($mode == 'dark') ? true : false;
+        $("#css-toggle-btn").prop( "checked", $dark );
+      }
+    }
+
+    // and every time it changes
+    if (window.matchMedia) window.matchMedia("(prefers-color-scheme: dark)").addListener( updateDarkToggleButton );
+
+    // function to toggle the css
+    function toggle_color_scheme_css($id, $mode) {
+      $dark = ($mode == 'dark') ? true : false;
+      $("#"+$id+"-dark").attr( "disabled", !$dark );
+      $("body").attr( "data-color-scheme", ($dark ? "dark" : "light" ) );
+      localStorage.colorMode = $mode;
+    }
+
+    // function to initialise the css
+    function init_color_scheme_css($id, $mode) {
+      $dark = ($mode == 'dark') ? true : false;
+      toggle_color_scheme_css($id, $mode);
+      setTimeout(function(){  // let the browser catch up
+        $("#"+$id+"-dark").removeAttr("media");
+      }, 100);
+    }
+
+    // toggle button click code
+    $("#css-toggle-btn").bind("click", function() {
+      // get current mode
+      // don't use `.data("color-scheme")`, it doesn't refresh
+      $mode = $("body").attr("data-color-scheme");
+      // test if this is a first time click event, if so initialise the code
+      if (typeof $mode === 'undefined') {
+        // not defined yet - set pref. & ask the browser if alt. is active
+        $mode = 'light';
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) $mode = 'dark';
+        init_color_scheme_css("css", $mode);
+      }
+      // by here we have the current mode, so swap it
+      $mode = ($mode == 'dark') ? 'light' : 'dark';
+      toggle_color_scheme_css("css", $mode);
+    });
+
+    // Check localStorage for initial value
+    $("body").attr("data-color-scheme", localStorage.colorMode);
+    updateDarkToggleButton();
+    init_color_scheme_css("css", localStorage.colorMode);
+
+    });
+	</script>
+{{end}}
+{{define "payee-transaction-table"}}
+<div id="tableprogress" class="progress">
+	<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%"></div>
+</div>
+
+<div id="transactions-section" style="display: none;">
+	{{if gt (len .AccountNames) 1}}
+	<ul class="nav nav-pills" id="myTab" role="tablist">
+		{{range $accIdx, $accName := .AccountNames}}
+		<li class="nav-item" role="presentation">
+			<button class="nav-link{{if eq $accIdx 0}} active{{end}}" id="tab{{$accIdx}}" data-bs-toggle="tab" data-bs-target="#acctab{{$accIdx}}" type="button" role="tab" aria-controls="acctab{{$accIdx}}" aria-selected="{{if eq 0 $accIdx}}true{{else}}false{{end}}">{{lastaccount $accName}}</button>
+		</li>
+		{{end}}
+	</ul>
+	{{end}}
+	<div class="tab-content">
+		{{range $accIdx, $accName := .AccountNames}}
+		<div class="tab-pane{{if eq 0 $accIdx}} active{{end}}" id="acctab{{$accIdx}}" role="tabpanel" aria-labelledby="tab{{$accIdx}}">
+			<table class="table table-bordered table-hover paginated-table">
+				<thead>
+					<tr>
+						<th>Date</th>
+						<th class="d-none d-sm-block">Description (Payee)</th>
+						<th class="d-block d-sm-none">Description (Payee)</th>
+						<th>Amount</th>
+					</tr>
+				</thead>
+				<tbody>
+					{{range $trIdx, $trans := $.Transactions}}
+					{{range $trAccIdx, $trAcc := $trans.AccountChanges}}
+					{{if or (eq $accName "All") (substr $trAcc.Name $accName)}}
+					<tr>
+						<td>{{$trans.Date.Format "2006-01-02"}}</td>
+						<td class="d-none d-sm-block">{{$trans.Payee}}</td>
+						<td class="d-block d-sm-none">{{printf "%.16s" $trans.Payee}}</td>
+						<td class="text-end">{{$trAcc.Balance.StringFixedBank}}</td>
+					</tr>
+					{{end}}
+					{{end}}
+					{{end}}
+				</tbody>
+			</table>
+		</div>
+		{{end}}
+	</div>
+</div>
+{{end}}
+{{define "nav"}}
+<!-- Fixed navbar -->
+<div class="navbar navbar-expand-lg navbar-light bg-success" role="navigation">
+  <div class="container">
+    <a class="navbar-brand" href="/">Ledger</a>
+    <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navtopbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="navbar-collapse collapse" id="navtopbar">
+      <ul class="nav navbar-nav" style="margin-right: auto!important;">
+        <li class="nav-item">
+          <a class="nav-link text-dark" href="/ledger">General Ledger</a>
+        </li>
+		{{if not .ReadOnly}}
+        <li class="nav-item">
+          <a class="nav-link text-dark" href="/addtrans">Add Transaction</a>
+        </li>
+		{{end}}
+        <li class="nav-item">
+          <a class="nav-link text-dark" href="/accounts">Accounts</a>
+        </li>
+        {{if .Reports }}
+        <li class="nav-item dropdown">
+          <a href="#" class="nav-link text-dark dropdown-toggle" data-bs-toggle="dropdown" role="button" id="reports-drowpdown">Reports</a>
+          <ul class="dropdown-menu" aria-labelledBy="reports-dropdown">
+            {{range .Reports}}
+            <li>
+              <a class="dropdown-item" href="/report/{{.Name}}">{{.Name}}</a>
+            </li>
+            {{end}}
+          </ul>
+        </li>
+		{{end}}
+        {{if .Portfolios }}
+        <li class="nav-item dropdown">
+          <a href="#" class="nav-link text-dark dropdown-toggle" data-bs-toggle="dropdown" role="button" id="portfolios-dropdown">Portfolios</a>
+          <ul class="dropdown-menu" aria-labelledBy="portfolios-dropdown">
+            {{range .Portfolios}}
+            <li>
+              <a class="dropdown-item" href="/portfolio/{{.Name}}">{{.Name}}</a>
+            </li>
+            {{end}}
+          </ul>
+        </li>
+        {{end}}
+      </ul>
+      <form class="form-inline">
+		  <div class="form-check form-switch">
+		  <input type="checkbox" class="form-check-input" role="switch" id="css-toggle-btn">
+		  <label class="form-check-label text-dark" for="css-toggle-btn">Toggle Dark Mode</label>
+		  </div>
+      </form>
+    </div>
+    <!--/.nav-collapse -->
+  </div>
+</div>
+{{end}}
