@@ -1,4 +1,4 @@
-package cmd
+package cli
 
 import (
 	"fmt"
@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/uztadh/ledger"
 	"github.com/spf13/cobra"
+	"github.com/uztadh/ledger"
 )
 
 // balanceCmd represents the balance command

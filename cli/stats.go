@@ -1,4 +1,4 @@
-package cmd
+package cli
 
 import (
 	"fmt"
@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/hako/durafmt"
-	"github.com/uztadh/ledger"
 	"github.com/spf13/cobra"
+	"github.com/uztadh/ledger"
 )
 
 // statsCmd represents the stats command

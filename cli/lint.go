@@ -1,10 +1,10 @@
-package cmd
+package cli
 
 import (
 	"fmt"
 
-	"github.com/uztadh/ledger"
 	"github.com/spf13/cobra"
+	"github.com/uztadh/ledger"
 )
 
 // lintCmd represents the lint command

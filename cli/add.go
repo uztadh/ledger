@@ -1,4 +1,4 @@
-package cmd
+package cli
 
 import (
 	"bytes"
@@ -13,8 +13,8 @@ import (
 	"github.com/erikgeiser/promptkit/confirmation"
 	"github.com/erikgeiser/promptkit/selection"
 	"github.com/erikgeiser/promptkit/textinput"
-	"github.com/uztadh/ledger"
 	"github.com/spf13/cobra"
+	"github.com/uztadh/ledger"
 )
 
 type posting struct {

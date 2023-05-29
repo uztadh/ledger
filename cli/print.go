@@ -1,4 +1,4 @@
-package cmd
+package cli
 
 import (
 	"errors"
@@ -11,9 +11,9 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"github.com/spf13/cobra"
 	"github.com/uztadh/ledger"
 	"github.com/uztadh/ledger/decimal"
-	"github.com/spf13/cobra"
 )
 
 const (
