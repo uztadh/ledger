@@ -11,8 +11,8 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/howeyc/ledger"
-	"github.com/howeyc/ledger/decimal"
+	"github.com/uztadh/ledger"
+	"github.com/uztadh/ledger/decimal"
 	"github.com/spf13/cobra"
 )
 

@@ -1,6 +1,6 @@
 package main
 
-import "github.com/howeyc/ledger/ledger/cmd"
+import "github.com/uztadh/ledger/ledger/cmd"
 
 func main() {
 	cmd.Execute()

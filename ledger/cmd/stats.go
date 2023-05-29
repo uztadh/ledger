@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/hako/durafmt"
-	"github.com/howeyc/ledger"
+	"github.com/uztadh/ledger"
 	"github.com/spf13/cobra"
 )
 

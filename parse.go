@@ -14,7 +14,7 @@ import (
 	"unicode"
 
 	"github.com/alfredxing/calc/compute"
-	"github.com/howeyc/ledger/decimal"
+	"github.com/uztadh/ledger/decimal"
 	date "github.com/joyt/godate"
 )
 

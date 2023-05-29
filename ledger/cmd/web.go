@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/howeyc/ledger/ledger/cmd/internal/httpcompress"
+	"github.com/uztadh/ledger/ledger/cmd/internal/httpcompress"
 
-	"github.com/howeyc/ledger"
+	"github.com/uztadh/ledger"
 	"github.com/julienschmidt/httprouter"
 	"github.com/spf13/cobra"
 )
